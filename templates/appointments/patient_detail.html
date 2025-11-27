@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Details - {{ patient.last_name }}, {{ patient.first_name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .detail-group { margin-bottom: 15px; }
+        .label { font-weight: bold; color: #666; }
+        .value { margin-left: 10px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        a { color: #4CAF50; }
+        .btn { background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+        .btn-edit { background-color: #2196F3; }
+        .photo { max-width: 200px; max-height: 200px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>{{ patient.last_name }}, {{ patient.first_name }}</h1>
+    <div class="detail-group">
+        <span class="label">Patient ID:</span>
+        <span class="value">{{ patient.patient_id }}</span>
+    </div>
+    <div class="detail-group">
+        <span class="label">Email:</span>
+        <span class="value">{{ patient.email|default:"Not provided" }}</span>
+    </div>
+    <div class="detail-group">
+        <span class="label">Phone:</span>
+        <span class="value">{{ patient.phone|default:"Not provided" }}</span>
+    </div>
+    {% if patient.photo %}
+    <div class="detail-group">
+        <span class="label">Photo:</span><br>
+        <img src="{{ patient.photo.url }}" alt="Patient Photo" class="photo">
+    </div>
+    {% endif %}
+    {% if patient.voice_sample %}
+    <div class="detail-group">
+        <span class="label">Voice Sample:</span>
+        <span class="value"><a href="{{ patient.voice_sample.url }}">Download</a></span>
+    </div>
+    {% endif %}
+    <p><a href="{% url 'patient_edit' patient.pk %}" class="btn btn-edit">Edit Patient</a></p>
+    <h2>Appointments</h2>
+    <table>
+        <tr>
+            <th>Doctor</th>
+            <th>Date/Time</th>
+            <th>Status</th>
+        </tr>
+        {% for appt in appointments %}
+        <tr>
+            <td>{{ appt.doctor }}</td>
+            <td>{{ appt.start_time }}</td>
+            <td>{{ appt.get_status_display }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No appointments scheduled.</td></tr>
+        {% endfor %}
+    </table>
+    <p><a href="{% url 'patient_list' %}">Back to Patient List</a></p>
+</body>
+</html>
