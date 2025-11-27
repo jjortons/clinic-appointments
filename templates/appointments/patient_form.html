@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if patient %}Edit Patient{% else %}New Patient{% endif %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="email"] { width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        input[type="file"] { padding: 5px; }
+        .btn { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .error { color: red; font-size: 12px; }
+        a { color: #4CAF50; }
+        .current-file { margin-top: 5px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>{% if patient %}Edit Patient{% else %}New Patient{% endif %}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div class="error">{{ field.errors }}</div>
+            {% endif %}
+            {% if field.name == 'photo' and patient.photo %}
+            <div class="current-file">Current: {{ patient.photo.name }}</div>
+            {% endif %}
+            {% if field.name == 'voice_sample' and patient.voice_sample %}
+            <div class="current-file">Current: {{ patient.voice_sample.name }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn">{% if patient %}Update{% else %}Save{% endif %} Patient</button>
+    </form>
+    <p><a href="{% url 'patient_list' %}">Back to Patient List</a></p>
+</body>
+</html>
