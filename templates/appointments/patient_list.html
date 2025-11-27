@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clinic Patients</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        a { color: #4CAF50; }
+        .btn { background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+        .btn-edit { background-color: #2196F3; padding: 5px 10px; }
+        .messages { padding: 10px; margin-bottom: 20px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+    <h1>Clinic Patients</h1>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <p><a href="{% url 'patient_create' %}" class="btn">+ New Patient</a></p>
+    <table>
+        <tr>
+            <th>Patient ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Actions</th>
+        </tr>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.patient_id }}</td>
+            <td><a href="{% url 'patient_detail' patient.pk %}">{{ patient.last_name }}, {{ patient.first_name }}</a></td>
+            <td>{{ patient.email }}</td>
+            <td>{{ patient.phone }}</td>
+            <td><a href="{% url 'patient_edit' patient.pk %}" class="btn btn-edit">Edit</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No patients registered.</td></tr>
+        {% endfor %}
+    </table>
+    <p><a href="{% url 'appointment_list' %}">Back to Appointments</a></p>
+</body>
+</html>
