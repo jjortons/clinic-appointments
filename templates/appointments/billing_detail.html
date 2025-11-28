@@ -1,0 +1,116 @@
+{% extends 'appointments/base.html' %}
+
+{% block title %}Invoice {{ billing.invoice_number }} - Clinic Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Invoice {{ billing.invoice_number }}</h4>
+                    <span class="badge {% if billing.payment_status == 'paid' %}bg-success{% elif billing.payment_status == 'pending' %}bg-warning{% elif billing.payment_status == 'overdue' %}bg-danger{% else %}bg-secondary{% endif %} fs-6">
+                        {{ billing.get_payment_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Patient Information</h6>
+                            <p class="mb-1"><strong>{{ billing.appointment.patient }}</strong></p>
+                            <p class="mb-0 text-muted">{{ billing.appointment.patient.email }}</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <h6>Doctor</h6>
+                            <p class="mb-0">Dr. {{ billing.appointment.doctor.full_name }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6"><strong>Appointment Date:</strong></div>
+                        <div class="col-md-6">{{ billing.appointment.start_time|date:"F d, Y H:i" }}</div>
+                    </div>
+                    
+                    {% if billing.description %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Service Description:</strong>
+                            <p class="mt-1">{{ billing.description }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="row mb-2">
+                        <div class="col-md-6">Service Amount:</div>
+                        <div class="col-md-6 text-end">${{ billing.amount }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">Tax:</div>
+                        <div class="col-md-6 text-end">${{ billing.tax }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">Discount:</div>
+                        <div class="col-md-6 text-end">-${{ billing.discount }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-md-6"><strong>Total Amount:</strong></div>
+                        <div class="col-md-6 text-end"><strong>${{ billing.total_amount }}</strong></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">Amount Paid:</div>
+                        <div class="col-md-6 text-end">${{ billing.amount_paid }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6"><strong>Balance Due:</strong></div>
+                        <div class="col-md-6 text-end"><strong class="{% if billing.balance_due > 0 %}text-danger{% else %}text-success{% endif %}">${{ billing.balance_due }}</strong></div>
+                    </div>
+                    
+                    {% if billing.due_date %}
+                    <div class="row mb-2">
+                        <div class="col-md-6">Due Date:</div>
+                        <div class="col-md-6 text-end">{{ billing.due_date|date:"F d, Y" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if billing.payment_method %}
+                    <div class="row mb-2">
+                        <div class="col-md-6">Payment Method:</div>
+                        <div class="col-md-6 text-end">{{ billing.get_payment_method_display }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if billing.notes %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <strong>Notes:</strong>
+                            <p class="mt-1 mb-0">{{ billing.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'appointments:billing_list' %}" class="btn btn-secondary">Back to List</a>
+                        <div>
+                            {% if billing.payment_status != 'paid' %}
+                            <form method="post" action="{% url 'appointments:billing_mark_paid' billing.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Mark as Paid</button>
+                            </form>
+                            {% endif %}
+                            <a href="{% url 'appointments:billing_edit' billing.pk %}" class="btn btn-warning">Edit</a>
+                            <a href="{% url 'appointments:billing_delete' billing.pk %}" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
