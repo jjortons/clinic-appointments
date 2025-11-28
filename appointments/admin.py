@@ -4,8 +4,21 @@ from .models import Doctor, Patient, Appointment
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'specialty')
-    search_fields = ('name', 'specialty')
+    list_display = ('last_name', 'first_name', 'specialty', 'registration_number', 'clinic_phone')
+    search_fields = ('first_name', 'last_name', 'specialty', 'registration_number')
+    list_filter = ('specialty',)
+    fieldsets = (
+        ('Personal Information', {
+            'fields': ('first_name', 'last_name', 'specialty', 'registration_number', 'photo')
+        }),
+        ('Clinic Information', {
+            'fields': ('clinic_address', 'clinic_hours', 'clinic_phone')
+        }),
+        ('Additional Information', {
+            'fields': ('comments',),
+            'classes': ('collapse',)
+        }),
+    )
 
 
 @admin.register(Patient)
@@ -31,5 +44,5 @@ class PatientAdmin(admin.ModelAdmin):
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ('patient', 'doctor', 'start_time', 'status')
     list_filter = ('status', 'doctor')
-    search_fields = ('patient__first_name', 'patient__last_name', 'doctor__name')
+    search_fields = ('patient__first_name', 'patient__last_name', 'doctor__first_name', 'doctor__last_name')
     ordering = ('start_time',)
