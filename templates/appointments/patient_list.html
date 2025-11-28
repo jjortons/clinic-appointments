@@ -24,7 +24,7 @@
         {% endfor %}
     </div>
     {% endif %}
-    <p><a href="{% url 'patient_create' %}" class="btn">+ New Patient</a></p>
+    <p><a href="{% url 'appointments:patient_create' %}" class="btn">+ New Patient</a></p>
     <table>
         <tr>
             <th>Patient ID</th>
@@ -36,15 +36,15 @@
         {% for patient in patients %}
         <tr>
             <td>{{ patient.patient_id }}</td>
-            <td><a href="{% url 'patient_detail' patient.pk %}">{{ patient.last_name }}, {{ patient.first_name }}</a></td>
+            <td><a href="{% url 'appointments:patient_detail' patient.pk %}">{{ patient.last_name }}, {{ patient.first_name }}</a></td>
             <td>{{ patient.email }}</td>
             <td>{{ patient.phone }}</td>
-            <td><a href="{% url 'patient_edit' patient.pk %}" class="btn btn-edit">Edit</a></td>
+            <td><a href="{% url 'appointments:patient_edit' patient.pk %}" class="btn btn-edit">Edit</a></td>
         </tr>
         {% empty %}
         <tr><td colspan="5">No patients registered.</td></tr>
         {% endfor %}
     </table>
-    <p><a href="{% url 'appointment_list' %}">Back to Appointments</a></p>
+    <p><a href="{% url 'appointments:appointment_list' %}">Back to Appointments</a></p>
 </body>
 </html>
