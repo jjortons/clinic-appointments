@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
-from .models import Appointment, Patient, Doctor
-from .forms import AppointmentForm, PatientForm, DoctorForm
+from .models import Appointment, Patient, Doctor, Billing
+from .forms import AppointmentForm, PatientForm, DoctorForm, BillingForm
 
 
 # Dashboard view
@@ -156,3 +156,69 @@ def appointment_delete(request, pk):
         messages.success(request, 'Appointment was deleted successfully!')
         return redirect(reverse('appointment_list'))
     return render(request, 'appointments/appointment_confirm_delete.html', {'appointment': appointment})
+
+
+# ==================== BILLING VIEWS ====================
+
+def billing_list(request):
+    billings = Billing.objects.select_related('appointment__doctor', 'appointment__patient').all()
+    return render(request, 'appointments/billing_list.html', {'billings': billings})
+
+def billing_detail(request, pk):
+    billing = get_object_or_404(Billing.objects.select_related('appointment__doctor', 'appointment__patient'), pk=pk)
+    return render(request, 'appointments/billing_detail.html', {'billing': billing})
+
+def billing_create(request, appointment_pk=None):
+    appointment = None
+    if appointment_pk:
+        appointment = get_object_or_404(Appointment, pk=appointment_pk)
+    
+    if request.method == 'POST':
+        form = BillingForm(request.POST)
+        if form.is_valid():
+            billing = form.save()
+            messages.success(request, f'Invoice {billing.invoice_number} was created successfully!')
+            return redirect(reverse('appointments:billing_detail', args=[billing.pk]))
+    else:
+        initial = {}
+        if appointment:
+            initial['appointment'] = appointment
+        form = BillingForm(initial=initial)
+    
+    return render(request, 'appointments/billing_form.html', {
+        'form': form,
+        'title': 'Create Invoice',
+        'appointment': appointment
+    })
+
+def billing_edit(request, pk):
+    billing = get_object_or_404(Billing, pk=pk)
+    if request.method == 'POST':
+        form = BillingForm(request.POST, instance=billing)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Invoice {billing.invoice_number} was updated successfully!')
+            return redirect(reverse('appointments:billing_detail', args=[pk]))
+    else:
+        form = BillingForm(instance=billing)
+    return render(request, 'appointments/billing_form.html', {'form': form, 'title': 'Edit Invoice', 'billing': billing})
+
+def billing_delete(request, pk):
+    billing = get_object_or_404(Billing, pk=pk)
+    if request.method == 'POST':
+        invoice_number = billing.invoice_number
+        billing.delete()
+        messages.success(request, f'Invoice {invoice_number} was deleted successfully!')
+        return redirect(reverse('appointments:billing_list'))
+    return render(request, 'appointments/billing_confirm_delete.html', {'billing': billing})
+
+def billing_mark_paid(request, pk):
+    billing = get_object_or_404(Billing, pk=pk)
+    if request.method == 'POST':
+        billing.payment_status = 'paid'
+        billing.amount_paid = billing.total_amount
+        from django.utils import timezone
+        billing.payment_date = timezone.now()
+        billing.save()
+        messages.success(request, f'Invoice {billing.invoice_number} marked as paid!')
+    return redirect(reverse('appointments:billing_detail', args=[pk]))
