@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dr. {{ doctor.last_name }} - Clinic Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Doctor Details</h1>
+        <div>
+            <a href="{% url 'appointments:doctor_list' %}" class="btn btn-secondary me-2">Back to List</a>
+            <a href="{% url 'appointments:doctor_edit' doctor.pk %}" class="btn btn-warning me-2">Edit</a>
+            <a href="{% url 'appointments:doctor_delete' doctor.pk %}" class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if doctor.photo %}
+                        <img src="{{ doctor.photo.url }}" alt="Photo" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px; font-size: 48px;">
+                            {{ doctor.first_name.0 }}{{ doctor.last_name.0 }}
+                        </div>
+                    {% endif %}
+                    <h4>Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h4>
+                    <p class="text-muted">{{ doctor.specialty }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr><th>First Name:</th><td>{{ doctor.first_name }}</td></tr>
+                        <tr><th>Last Name:</th><td>{{ doctor.last_name }}</td></tr>
+                        <tr><th>Specialty:</th><td>{{ doctor.specialty }}</td></tr>
+                        <tr><th>Registration #:</th><td>{{ doctor.registration_number|default:"-" }}</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Clinic Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr><th>Clinic Address:</th><td>{{ doctor.clinic_address|default:"-" }}</td></tr>
+                        <tr><th>Clinic Phone:</th><td>{{ doctor.clinic_phone|default:"-" }}</td></tr>
+                        <tr><th>Clinic Email:</th><td>{{ doctor.clinic_email|default:"-" }}</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if doctor.comments %}
+    <div class="card mt-3">
+        <div class="card-header"><h5 class="mb-0">Comments</h5></div>
+        <div class="card-body">{{ doctor.comments }}</div>
+    </div>
+    {% endif %}
+
+    <div class="card mt-3">
+        <div class="card-header"><h5 class="mb-0">Appointments</h5></div>
+        <div class="card-body">
+            {% if doctor.appointment_set.all %}
+            <table class="table table-striped">
+                <thead><tr><th>Date</th><th>Time</th><th>Patient</th><th>Status</th></tr></thead>
+                <tbody>
+                {% for apt in doctor.appointment_set.all %}
+                <tr>
+                    <td>{{ apt.date }}</td>
+                    <td>{{ apt.time }}</td>
+                    <td>{{ apt.patient.first_name }} {{ apt.patient.last_name }}</td>
+                    <td>{{ apt.status }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-muted mb-0">No appointments found for this doctor.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
