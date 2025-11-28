@@ -1,5 +1,5 @@
 from django import forms
-from .models import Appointment, Patient, Doctor
+from .models import Appointment, Patient, Doctor, Billing
 
 
 class AppointmentForm(forms.ModelForm):
@@ -65,4 +65,35 @@ class DoctorForm(forms.ModelForm):
             'clinic_phone': 'Clinic Phone',
             'photo': 'Doctor Photo',
             'comments': 'Comments',
+
+
+
+            
+
+class BillingForm(forms.ModelForm):
+    class Meta:
+        model = Billing
+        fields = ['appointment', 'amount', 'tax', 'discount', 'payment_status', 
+                  'payment_method', 'due_date', 'description', 'notes']
+        widgets = {
+            'appointment': forms.Select(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'tax': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'discount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'payment_status': forms.Select(attrs={'class': 'form-control'}),
+            'payment_method': forms.Select(attrs={'class': 'form-control'}),
+            'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Service description'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Additional notes'}),
+        }
+        labels = {
+            'amount': 'Service Amount ($)',
+            'tax': 'Tax Amount ($)',
+            'discount': 'Discount ($)',
+            'payment_status': 'Payment Status',
+            'payment_method': 'Payment Method',
+            'due_date': 'Due Date',
+            'description': 'Service Description',
+            'notes': 'Notes',
+        }
         }
