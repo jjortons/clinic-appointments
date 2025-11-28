@@ -65,7 +65,7 @@ class DoctorForm(forms.ModelForm):
             'clinic_phone': 'Clinic Phone',
             'photo': 'Doctor Photo',
             'comments': 'Comments',
-
+        }
 
 
             
