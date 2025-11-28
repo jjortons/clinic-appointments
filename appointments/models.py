@@ -75,3 +75,57 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.patient} with Dr. {self.doctor.last_name} on {self.start_time.strftime('%Y-%m-%d %H:%M')}"
+
+
+class Billing(models.Model):
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('partially_paid', 'Partially Paid'),
+        ('overdue', 'Overdue'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    PAYMENT_METHOD_CHOICES = [
+        ('cash', 'Cash'),
+        ('credit_card', 'Credit Card'),
+        ('debit_card', 'Debit Card'),
+        ('insurance', 'Insurance'),
+        ('other', 'Other'),
+    ]
+    
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='billings')
+    invoice_number = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    tax = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, blank=True)
+    payment_date = models.DateTimeField(blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True)
+    description = models.TextField(blank=True, help_text='Service description or itemized list')
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Billings'
+    
+    def save(self, *args, **kwargs):
+        # Calculate total amount
+        self.total_amount = self.amount + self.tax - self.discount
+        # Generate invoice number if not provided
+        if not self.invoice_number:
+            import datetime
+            self.invoice_number = f"INV-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+        super().save(*args, **kwargs)
+    
+    @property
+    def balance_due(self):
+        return (self.total_amount or 0) - self.amount_paid
+    
+    def __str__(self):
+        return f"Invoice {self.invoice_number} - {self.appointment.patient} - ${self.total_amount}"
