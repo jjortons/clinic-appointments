@@ -96,4 +96,3 @@ class BillingForm(forms.ModelForm):
             'description': 'Service Description',
             'notes': 'Notes',
         }
-        }
