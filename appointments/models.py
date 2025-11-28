@@ -3,11 +3,32 @@ from django.core.validators import RegexValidator
 
 
 class Doctor(models.Model):
-    name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
     specialty = models.CharField(max_length=100, blank=True)
+    registration_number = models.CharField(
+        max_length=20,
+        unique=True,
+        blank=True,
+        null=True,
+        help_text='Medical license/registration number'
+    )
+    clinic_address = models.TextField(blank=True)
+    clinic_hours = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text='e.g., Mon-Fri 9AM-5PM'
+    )
+    clinic_phone = models.CharField(max_length=20, blank=True)
+    photo = models.ImageField(upload_to='doctors/photos/', blank=True, null=True)
+    comments = models.TextField(blank=True, help_text='Additional notes about the doctor')
 
     def __str__(self):
-        return f"{self.name} ({self.specialty})" if self.specialty else self.name
+        return f"Dr. {self.first_name} {self.last_name}" + (f" ({self.specialty})" if self.specialty else "")
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Patient(models.Model):
@@ -50,7 +71,7 @@ class Appointment(models.Model):
     notes = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['start_time']
+        ordering = ['-start_time']
 
     def __str__(self):
-        return f"{self.patient} with {self.doctor} at {self.start_time}"
+        return f"{self.patient} with Dr. {self.doctor.last_name} on {self.start_time.strftime('%Y-%m-%d %H:%M')}"
