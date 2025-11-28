@@ -27,4 +27,13 @@ urlpatterns = [
     path('appointments/<int:pk>/', views.appointment_detail, name='appointment_detail'),
     path('appointments/<int:pk>/edit/', views.appointment_edit, name='appointment_edit'),
     path('appointments/<int:pk>/delete/', views.appointment_delete, name='appointment_delete'),
+
+        # Billing URLs
+    path('billing/', views.billing_list, name='billing_list'),
+    path('billing/create/', views.billing_create, name='billing_create'),
+    path('billing/create/<int:appointment_pk>/', views.billing_create, name='billing_create_for_appointment'),
+    path('billing/<int:pk>/', views.billing_detail, name='billing_detail'),
+    path('billing/<int:pk>/edit/', views.billing_edit, name='billing_edit'),
+    path('billing/<int:pk>/delete/', views.billing_delete, name='billing_delete'),
+    path('billing/<int:pk>/mark-paid/', views.billing_mark_paid, name='billing_mark_paid'),
 ]
