@@ -1,5 +1,5 @@
 from django import forms
-from .models import Appointment, Patient
+from .models import Appointment, Patient, Doctor
 
 
 class AppointmentForm(forms.ModelForm):
@@ -8,6 +8,10 @@ class AppointmentForm(forms.ModelForm):
         fields = ['doctor', 'patient', 'start_time', 'status', 'notes']
         widgets = {
             'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'doctor': forms.Select(attrs={'class': 'form-control'}),
+            'patient': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -27,9 +31,38 @@ class PatientForm(forms.ModelForm):
         labels = {
             'first_name': 'First Name',
             'last_name': 'Last Name',
-            'patient_id': 'Patient ID (format: 9999-99999)',
+            'patient_id': 'Patient ID (format: 0000-00000)',
             'email': 'Email Address',
             'phone': 'Phone Number',
             'photo': 'Patient Photo',
             'voice_sample': 'Voice Sample',
+        }
+
+
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ['first_name', 'last_name', 'specialty', 'registration_number', 
+                  'clinic_address', 'clinic_hours', 'clinic_phone', 'photo', 'comments']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'specialty': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Cardiology'}),
+            'registration_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Medical License Number'}),
+            'clinic_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Clinic Address'}),
+            'clinic_hours': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., Mon-Fri 9AM-5PM'}),
+            'clinic_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Clinic Phone Number'}),
+            'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'comments': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Additional notes'}),
+        }
+        labels = {
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
+            'specialty': 'Specialty',
+            'registration_number': 'Registration Number',
+            'clinic_address': 'Clinic Address',
+            'clinic_hours': 'Clinic Hours',
+            'clinic_phone': 'Clinic Phone',
+            'photo': 'Doctor Photo',
+            'comments': 'Comments',
         }
