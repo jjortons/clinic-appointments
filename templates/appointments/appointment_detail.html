@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Appointment Details - Clinic Management{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Appointment Details</h1>
+        <div>
+            <a href="{% url 'appointments:appointment_list' %}" class="btn btn-secondary me-2">Back to List</a>
+            <a href="{% url 'appointments:appointment_edit' appointment.pk %}" class="btn btn-warning me-2">Edit</a>
+            <a href="{% url 'appointments:appointment_delete' appointment.pk %}" class="btn btn-danger">Delete</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Appointment Information</h5></div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr><th>Date:</th><td>{{ appointment.date }}</td></tr>
+                        <tr><th>Time:</th><td>{{ appointment.time }}</td></tr>
+                        <tr><th>Status:</th><td><span class="badge bg-{% if appointment.status == 'Scheduled' %}primary{% elif appointment.status == 'Completed' %}success{% elif appointment.status == 'Cancelled' %}danger{% else %}secondary{% endif %}">{{ appointment.status }}</span></td></tr>
+                        <tr><th>Reason:</th><td>{{ appointment.reason|default:"-" }}</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header"><h5 class="mb-0">Patient</h5></div>
+                <div class="card-body">
+                    <h6>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</h6>
+                    <a href="{% url 'appointments:patient_detail' appointment.patient.pk %}" class="btn btn-sm btn-outline-primary">View Patient</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Doctor</h5></div>
+                <div class="card-body">
+                    <h6>Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</h6>
+                    <p class="text-muted mb-2">{{ appointment.doctor.specialty }}</p>
+                    <a href="{% url 'appointments:doctor_detail' appointment.doctor.pk %}" class="btn btn-sm btn-outline-primary">View Doctor</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if appointment.notes %}
+    <div class="card mt-3">
+        <div class="card-header"><h5 class="mb-0">Notes</h5></div>
+        <div class="card-body">{{ appointment.notes }}</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
