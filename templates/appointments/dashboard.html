@@ -61,18 +61,18 @@
         <div class="nav-cards">
             <div class="nav-card">
                 <h3>Doctors</h3>
-                <a href="{% url 'doctor_list' %}">View All</a>
-                <a href="{% url 'doctor_create' %}" class="secondary">Add New</a>
+                <a href="{% url 'appointments:doctor_list' %}">View All</a>
+                <a href="{% url 'appointments:doctor_create' %}" class="secondary">Add New</a>
             </div>
             <div class="nav-card">
                 <h3>Patients</h3>
-                <a href="{% url 'patient_list' %}">View All</a>
-                <a href="{% url 'patient_create' %}" class="secondary">Add New</a>
+                <a href="{% url 'appointments:patient_list' %}">View All</a>
+                <a href="{% url 'appointments:patient_create' %}" class="secondary">Add New</a>
             </div>
             <div class="nav-card">
                 <h3>Appointments</h3>
-                <a href="{% url 'appointment_list' %}">View All</a>
-                <a href="{% url 'appointment_create' %}" class="secondary">Add New</a>
+                <a href="{% url 'appointments:appointment_list' %}">View All</a>
+                <a href="{% url 'appointments:appointment_create' %}" class="secondary">Add New</a>
             </div>
         </div>
         
